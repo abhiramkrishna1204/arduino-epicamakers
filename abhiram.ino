@@ -1,3 +1,61 @@
+#include "Ubidots.h"
+#include<PubSubClient.h>
+/****************************************
+ * Define Constants
+ ****************************************/
+#define TOKEN "********" // BBFF-xC02d3i0ikshgVhXERxacspctEfszB
+#define WIFINAME "******" //abhiram 4184
+#define WIFIPASS "******" // 12345678
+
+Ubidots client(TOKEN);
+
+/****************************************
+ * Auxiliar Functions
+ ****************************************/
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i=0;i<length;i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+}
+
+/****************************************
+ * Main Functions
+ ****************************************/
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  client.setDebug(true); // Pass a true or false bool value to activate debug messages
+  client.wifiConnection(WIFINAME, WIFIPASS);
+  client.begin(callback);
+  }
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if(!client.connected()){
+      client.reconnect();
+      }
+
+  // Publish values to 2 different data sources
+ for(int i=0;i<50;i++)
+ {
+      client.add("testvalues",i); //Insert your variable Labels and the value to be sent
+      client.ubidotsPublish("tutorial");
+ 
+ 
+  client.loop();
+  delay(20000);
+  }
+}
+6. Output
+After successful uploading of the code, output will display on the ubidots Devices.
+
+
 int fsrPin = A0;
 int fsrReading;
 int fsrVoltage;
